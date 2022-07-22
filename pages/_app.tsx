@@ -1,3 +1,5 @@
+// This is the entry point of your app, every page starts here
+
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import "../styles/globals.css";
