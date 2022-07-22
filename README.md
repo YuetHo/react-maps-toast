@@ -1,1 +1,1 @@
-#Practice project using google Maps API and Toastify
+Practice project using google Maps API and Toastify
