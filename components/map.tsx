@@ -8,6 +8,8 @@ import {
 } from "@react-google-maps/api";
 import Places from "./places";  // we'll use this to help us search for places
 import Distance from "./distance";
+import { ToastContainer, toast } from 'react-toastify';  // toast notifications
+import 'react-toastify/dist/ReactToastify.css';
 
 // we work in typscript, so here are some shortcuts instead of having to type the full name
 type LatLngLiteral = google.maps.LatLngLiteral;
@@ -56,11 +58,15 @@ export default function Map() {
   // houses is an array of randomly generate houses around the center
   // center is a dependency so it regens each time center changes
   const houses = useMemo(() => generateHouses(office), [office]);
-  
+  const nearestHouse = useMemo(() => findNearHouse(office, houses), [office])
+
   const fetchDirections = (house: LatLngLiteral) => {
     if (!office) return;
 
+    // service used to find directions of two groups
     const service = new google.maps.DirectionsService();
+
+    // route is from house marker to your center marker
     service.route(
       {
         origin: house,
@@ -69,15 +75,28 @@ export default function Map() {
       },
       (result, status) => {
         if (status === "OK" && result) {
-          setDirections(result);
+          setDirections(result);  // sets a DirectionsResult object which the maps API can render
         }
       }
     );
   };
 
+  // toast message
+  // really scuffed implementation of reverse geocoding because it only displays the actual current area locations on the 2nd search onward
+  const notify = async () => {
+    const geocoder = new google.maps.Geocoder()
+    let location = await geocoder.geocode({ location: nearestHouse }).then((r) => {
+      return r.results[0].formatted_address
+    })
+    toast('Nearest store at ' + location);
+  }
+
+  // scuffed, this notifies twice
+  useMemo(() => notify(), [office])
+
+  // two big divs (left side for suggestions stuff, right side for map)
   return (
     <div className="container">
-
       {/* Controls is where you put your google places search bar */}
       <div className="controls">
         <h1>Commute?</h1>
@@ -96,7 +115,10 @@ export default function Map() {
           }}
         />
         {!office && <p>Enter the address of your office.</p>}
-        {directions && <Distance leg={directions.routes[0].legs[0]} />}
+
+        {/* Get the [0] (1st) route */}
+        {directions && <Distance leg={directions.routes[0].legs[0]} />} 
+        
       </div>
 
       {/* Map is where you put actual map */}
@@ -120,6 +142,7 @@ export default function Map() {
           // Google maps has an onload function that when it finishes loading, it gives reference to the map
           onLoad={onLoad}
         >
+          {/* render directions here */}
           {directions && (
             <DirectionsRenderer
               directions={directions}
@@ -136,7 +159,7 @@ export default function Map() {
           {/* if there is an office (places component sets office location when user click suggest),
               then put a marker at office location lat/lng*/}
           {/* this is one way to do an if statement, you could also do a ternary approach */}
-          {office && ( 
+          {office && (
             <>
               {/* All of this is in a fragment, so the marker, houses, circles will all appear in one area */}
               <Marker
@@ -148,16 +171,19 @@ export default function Map() {
                   with a number to indicate how many pins in that cluster pin */}
               <MarkerClusterer>
                 {(clusterer) =>
-                  houses.map((house) => (
-                    <Marker
-                      key={house.lat}
-                      position={house}
-                      clusterer={clusterer} // pass the clusterer prop
-                      onClick={() => {
-                        fetchDirections(house);
-                      }}
-                    />
-                  ))
+                  houses.map((house) => {
+                    return (
+                      <Marker
+                        key={house.lat}
+                        position={house}
+                        clusterer={clusterer} // pass the clusterer prop
+                        onClick={() => {
+                          fetchDirections(house);
+                        }}
+                      />
+
+                    )
+                  })
                 }
               </MarkerClusterer>
 
@@ -218,3 +244,19 @@ const generateHouses = (position: LatLngLiteral) => {
   }
   return _houses;
 };
+
+// calculate nearest house
+const findNearHouse = (office: LatLngLiteral, houses: Array<LatLngLiteral>) => {
+  const target = office.lat + office.lng
+  const values: Array<number> = []
+
+  // get absolute distance value of each house
+  houses.map((house) => {
+    const value = Math.abs(Math.abs(target) - Math.abs(house.lat + house.lng))
+    values.push(value)
+  })
+
+  // find min using reduce function
+  const min = values.indexOf(values.reduce((a,b) => Math.min(a,b)))
+  return houses[min]
+}

@@ -3,13 +3,16 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import "../styles/globals.css";
+import { ToastContainer, toast } from 'react-toastify';  // toast notifications
 
 function MyApp({ Component, pageProps }: AppProps) {
+  
   return (
     <>
       <Head>
         <title>Commute?</title>
       </Head>
+      <ToastContainer autoClose={30000}/>
       <Component {...pageProps} />
     </>
   );

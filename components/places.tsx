@@ -44,18 +44,14 @@ export default function Places({ setOffice }: PlacesProps) {
     const results = await getGeocode({ address: val });
     const { lat, lng } = await getLatLng(results[0]); // there is only one element in results, grab the first one
     setOffice({ lat, lng });  // set office state to coordinate, this state as defined in map module will then pan map to location
+
   };
 
-  // toast message
-  const notify = () => toast("Wow so easy !");
 
   // this will be your search bar, and dropdown suggested places list
   return (
     // combobox needs a onSelect function for when user clicks on any of the suggested options popup
     <Combobox onSelect={handleSelect}>
-
-      <button onClick={notify}>Notify !</button>
-      <ToastContainer />
 
       {/* inside the box is the input */}
       <ComboboxInput
