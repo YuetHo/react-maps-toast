@@ -1,1 +1,1 @@
-# Google Maps in React Crash Course
+# Practice project using google Maps API and Toastify
