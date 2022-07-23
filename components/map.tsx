@@ -235,7 +235,7 @@ const farOptions = {
 // generate houses to show them on the map, this is our mock data
 const generateHouses = (position: LatLngLiteral) => {
   const _houses: Array<LatLngLiteral> = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     const direction = Math.random() < 0.5 ? -2 : 2;
     _houses.push({
       lat: position.lat + Math.random() / direction,
