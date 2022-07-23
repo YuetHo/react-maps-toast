@@ -10,8 +10,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Commute?</title>
+        <title>Toasty Map</title>
       </Head>
+      
+      {/* Toast properties  */}
       <ToastContainer autoClose={30000}/>
       <Component {...pageProps} />
     </>

@@ -99,7 +99,7 @@ export default function Map() {
     <div className="container">
       {/* Controls is where you put your google places search bar */}
       <div className="controls">
-        <h1>Commute?</h1>
+        <h1>Nearby stores?</h1>
 
         {/* We'll use our places component here */}
         <Places

@@ -59,7 +59,7 @@ export default function Places({ setOffice }: PlacesProps) {
         onChange={(e) => setValue(e.target.value)}  // listen for value on change in the input
         disabled={!ready} // disables the input area if not ready to use
         className="combobox-input"  // id for css
-        placeholder="Search office address" // placeholder prompt to let user know what to type
+        placeholder="Search area address" // placeholder prompt to let user know what to type
       />
 
       {/* you will put the list of places suggestions here, popover is the list popup when you type a place in input */}
